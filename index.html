@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Madurez AppSec LATAM</title>
 
-<!-- CSP segura: permite APENAS este script (nonce). Sem rede, sem iframes, sem objetos. -->
+<!-- CSP segura (sin red, sin storage, sin terceros). Permite solo ESTE script por nonce. -->
 <meta http-equiv="Content-Security-Policy"
       content="default-src 'self';
                script-src 'self' 'nonce-cr001';
@@ -21,21 +21,56 @@
 
 <style>
   :root{color-scheme:light dark}
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;padding:20px;line-height:1.4}
-  .wrap{max-width:900px;margin:auto}
-  .card{border:1px solid rgba(127,127,127,.35);border-radius:14px;padding:16px;margin-bottom:14px}
-  h1{margin:0 0 6px;font-size:1.3rem}
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;padding:20px;line-height:1.45}
+  .wrap{max-width:960px;margin:auto}
+  .card{border:1px solid rgba(127,127,127,.35);border-radius:16px;padding:16px;margin-bottom:14px}
+  h1{margin:0 0 6px;font-size:1.35rem}
   .sub{opacity:.85;margin:0 0 6px}
-  .sig{opacity:.85;margin:0 0 10px;font-size:.92rem}
-  .muted{opacity:.8;font-size:.9rem;margin:8px 0 0}
+  .sig{opacity:.85;margin:0 0 10px;font-size:.95rem}
+  .muted{opacity:.82;font-size:.92rem;margin:8px 0 0}
+  h2{margin:0 0 10px;font-size:1.1rem}
+  h3{margin:14px 0 6px;font-size:1rem}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;border:1px solid rgba(127,127,127,.35);font-weight:700;font-size:.85rem}
+
+  /* Quiz */
   .q{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(127,127,127,.35)}
   .q:first-child{border-top:0;padding-top:0}
-  .opt{display:flex;gap:10px;padding:8px;border:1px solid rgba(127,127,127,.25);border-radius:10px;margin-top:6px;align-items:flex-start}
+  .opt{display:flex;gap:10px;padding:10px;border:1px solid rgba(127,127,127,.25);border-radius:12px;margin-top:8px;align-items:flex-start}
   .opt input{margin-top:2px}
-  button{font:inherit;padding:10px 12px;border-radius:10px;border:1px solid rgba(127,127,127,.45);background:transparent;cursor:pointer}
+  button{font:inherit;padding:10px 12px;border-radius:12px;border:1px solid rgba(127,127,127,.45);background:transparent;cursor:pointer}
   button:disabled{opacity:.55;cursor:not-allowed}
-  .score{font-size:1.1rem;font-weight:800}
-  .badge{display:inline-block;padding:6px 10px;border:1px solid rgba(127,127,127,.45);border-radius:999px;font-weight:700}
+
+  /* Resultado chamativo */
+  .resultBox{
+    border-radius:18px;
+    padding:18px;
+    border:2px solid rgba(127,127,127,.25);
+    display:grid;
+    gap:10px;
+  }
+  .resultTop{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+  .scoreBig{font-size:1.35rem;font-weight:900}
+  .levelTag{font-weight:900;padding:10px 14px;border-radius:999px;border:2px solid rgba(127,127,127,.35);letter-spacing:.2px}
+  .hint{margin:0;opacity:.95}
+
+  /* Cores (verde / amarelo / vermelho) */
+  .lvl-green{border-color:#1B5E20;background:rgba(46, 125, 50, .18)}
+  .lvl-yellow{border-color:#8D6E00;background:rgba(255, 193, 7, .20)}
+  .lvl-red{border-color:#B71C1C;background:rgba(211, 47, 47, .18)}
+
+  /* Barra visual */
+  .barWrap{border:1px solid rgba(127,127,127,.35);border-radius:999px;overflow:hidden;height:14px}
+  .barFill{height:100%;width:0%}
+
+  .bar-green{background:#2E7D32}
+  .bar-yellow{background:#FFC107}
+  .bar-red{background:#D32F2F}
+
+  /* Caixinhas explicativas com borda colorida */
+  .boxExplain{border-radius:14px;padding:12px;border:1px solid rgba(127,127,127,.35)}
+  .ex-green{border-left:6px solid #2E7D32}
+  .ex-yellow{border-left:6px solid #FFC107}
+  .ex-red{border-left:6px solid #D32F2F}
 </style>
 </head>
 
@@ -46,24 +81,73 @@
     <h1>Madurez AppSec LATAM</h1>
     <p class="sub">Evaluación de madurez en desarrollo seguro · 10 preguntas · Nota 0–10</p>
     <p class="sig">By <strong>ChessRedOffsec</strong> · Apoyo <strong>Hacktiba LATAM</strong></p>
-    <p class="muted">
-      Privacidad: no se recolectan datos personales ni de empresa. No cookies, no storage, no envío de datos.
-    </p>
+    <p class="muted">Privacidad: no se recolectan datos personales ni de empresa. No cookies, no storage, no envío de datos.</p>
   </div>
 
+  <!-- TEXTO EXPLICATIVO (BÁSICO / INTERMEDIO / AVANZADO) -->
+  <div class="card">
+    <h2>¿Cómo interpretar el resultado?</h2>
+    <p>
+      Esta evaluación mide la <strong>madurez en seguridad de aplicaciones</strong> de forma práctica y educativa.
+      No busca auditoría ni conformidad; busca <strong>conciencia y orientación</strong>.
+    </p>
+
+    <div class="boxExplain ex-red">
+      <h3><span class="pill">Básico</span> (0 – 3,5)</h3>
+      <p class="muted" style="margin:0">
+        La seguridad todavía no forma parte del día a día. Las prácticas suelen ser reactivas o puntuales.
+        En este nivel, el mayor valor está en <strong>establecer fundamentos</strong>: controles mínimos,
+        visibilidad y responsabilidades claras.
+      </p>
+    </div>
+
+    <div class="boxExplain ex-yellow" style="margin-top:10px">
+      <h3><span class="pill">Intermedio</span> (4 – 7)</h3>
+      <p class="muted" style="margin:0">
+        La seguridad ya está presente, pero de forma inconsistente. Existen herramientas o controles,
+        aunque no siempre están estandarizados en todos los equipos.
+        El foco aquí es <strong>organizar, estandarizar y escalar</strong> lo que ya funciona.
+      </p>
+    </div>
+
+    <div class="boxExplain ex-green" style="margin-top:10px">
+      <h3><span class="pill">Avanzado</span> (7,5 – 10)</h3>
+      <p class="muted" style="margin:0">
+        La seguridad es parte natural del desarrollo. Los controles están integrados desde el diseño hasta la operación,
+        se usan métricas y hay mejora continua. El reto es <strong>mantener consistencia</strong> y evolucionar con nuevos riesgos.
+      </p>
+    </div>
+
+    <p class="muted">La madurez no es un estado final: es un proceso continuo de evolución.</p>
+  </div>
+
+  <!-- QUIZ -->
   <form id="quiz" class="card" autocomplete="off" novalidate>
     <div id="questions"></div>
+
     <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
       <button id="submitBtn" type="submit" disabled>Ver resultado</button>
       <button id="resetBtn" type="button">Limpiar</button>
     </div>
+
     <p class="muted">Cada pregunta: Inicial (0) · Intermedio (0,5) · Avanzado (1)</p>
   </form>
 
+  <!-- RESULTADO CHAMATIVO -->
   <div id="result" class="card" style="display:none">
-    <div class="score" id="score"></div>
-    <div style="margin-top:8px" id="level"></div>
-    <p class="muted" id="hint"></p>
+    <div id="resultBox" class="resultBox">
+      <div class="resultTop">
+        <div class="scoreBig" id="scoreLine">Nota: —</div>
+        <div class="levelTag" id="levelTag">Nivel: —</div>
+      </div>
+
+      <div class="barWrap" aria-label="Progreso de madurez">
+        <div class="barFill" id="barFill"></div>
+      </div>
+
+      <p class="hint" id="hintLine"></p>
+      <p class="muted" id="detailLine" style="margin:0"></p>
+    </div>
   </div>
 
 </div>
@@ -96,12 +180,14 @@ const answeredAll = () => state.scores.every(v => v !== null);
 
 function renderQuestions(){
   const box = $("questions");
-  box.innerHTML = "";
-
+  box.textContent = ""; // limpa sem innerHTML
   QUESTIONS.forEach((q, i) => {
     const div = document.createElement("div");
     div.className = "q";
-    div.innerHTML = `<strong>${q}</strong>`;
+
+    const title = document.createElement("strong");
+    title.textContent = q;
+    div.appendChild(title);
 
     ANSWERS.forEach(([label, value]) => {
       const opt = document.createElement("label");
@@ -128,9 +214,54 @@ function renderQuestions(){
 }
 
 function classify(score){
-  if(score <= 3.5) return ["Básico", "Prioriza fundamentos: controles mínimos, disciplina y consistencia."];
-  if(score <= 7.0) return ["En evolución", "Buen progreso: estandariza prácticas y refuerza controles."];
-  return ["Maduro", "Excelente: foco en consistencia, métricas y mejora continua."];
+  // score: 0..10
+  if(score <= 3.5){
+    return {
+      level: "Básico",
+      clsBox: "lvl-red",
+      clsBar: "bar-red",
+      hint: "Prioriza fundamentos: controles mínimos, disciplina y consistencia.",
+      detail: "Siguiente paso sugerido: definir controles esenciales y empezar con prácticas simples pero constantes."
+    };
+  }
+  if(score <= 7.0){
+    return {
+      level: "Intermedio",
+      clsBox: "lvl-yellow",
+      clsBar: "bar-yellow",
+      hint: "Buen progreso: estandariza prácticas y refuerza controles clave.",
+      detail: "Siguiente paso sugerido: llevar lo que funciona a todos los equipos (pipeline, cloud, APIs y métricas)."
+    };
+  }
+  return {
+    level: "Avanzado",
+    clsBox: "lvl-green",
+    clsBar: "bar-green",
+    hint: "Excelente: foco en consistencia, métricas y mejora continua.",
+    detail: "Siguiente paso sugerido: mantener calidad, revisar riesgos nuevos y asegurar continuidad (personas, procesos y herramientas)."
+  };
+}
+
+function setResultUI(total, info){
+  const box = $("resultBox");
+  const tag = $("levelTag");
+  const bar = $("barFill");
+
+  // limpar classes anteriores
+  box.classList.remove("lvl-red","lvl-yellow","lvl-green");
+  bar.classList.remove("bar-red","bar-yellow","bar-green");
+
+  box.classList.add(info.clsBox);
+  bar.classList.add(info.clsBar);
+
+  $("scoreLine").textContent = `Nota: ${total} / 10`;
+  tag.textContent = `Nivel: ${info.level}`;
+  $("hintLine").textContent = info.hint;
+  $("detailLine").textContent = info.detail;
+
+  // barra proporcional (0..10 => 0..100%)
+  const pct = Math.max(0, Math.min(100, (total / 10) * 100));
+  bar.style.width = pct.toFixed(0) + "%";
 }
 
 $("quiz").addEventListener("submit", (e) => {
@@ -138,12 +269,9 @@ $("quiz").addEventListener("submit", (e) => {
   if(!answeredAll()) return;
 
   const total = Math.round(state.scores.reduce((a,b)=>a+b,0) * 10) / 10;
-  const [lvl, hint] = classify(total);
+  const info = classify(total);
 
-  $("score").textContent = `Nota: ${total} / 10`;
-  $("level").innerHTML = `<span class="badge">Nivel: ${lvl}</span>`;
-  $("hint").textContent = hint;
-
+  setResultUI(total, info);
   $("result").style.display = "block";
   window.scrollTo({ top: $("result").offsetTop - 10, behavior: "smooth" });
 });
@@ -157,5 +285,6 @@ $("resetBtn").addEventListener("click", () => {
 
 renderQuestions();
 </script>
+
 </body>
 </html>
